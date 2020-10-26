@@ -31,7 +31,7 @@ try {
         run();
         sleep(1.5); // TODO: find better method of witing for respons
     }else{
-        console.log(`This commit did not match the trello link syntax: FO-{num}`)
+        console.log(`This commit did not match the trello link syntax: TC-{num}`)
     }
 } catch (error) {
     core.setFailed(error.message);
