@@ -4,9 +4,20 @@ const fetch = require('node-fetch');
 
 const trelloCardPattern = /^[T|t][C|c]-(\d+)/;
 
-function sleep(seconds)  {
-    var e = new Date().getTime() + (seconds * 2000);
-    while (new Date().getTime() <= e) {}
+async function apiCall(board, key, token, requestedCardShortId)  {
+    return fetch(`https://api.trello.com/1/boards/${board}/cards?fields=name,url,idShort&key=${key}&token=${token}`, { method: 'GET'})
+        .then(res => res.json())
+        .then(json => {
+            const requestedCard = json.find(v => v.idShort == requestedCardShortId)
+            console.log(`The card: ${requestedCard.id}`)
+
+            core.setOutput("success", true)
+            core.setOutput("card-id", requestedCard.id);
+        })
+        .catch(err => {
+            console.error(err);
+            core.setFailed(error.message);
+        });
 }
 
 try {
@@ -19,19 +30,12 @@ try {
         const requestedCardShortId = match[1]
         console.log(`Requested short ID: ${requestedCardShortId}`)
 
-        const run = async () => {
-            fetch(`https://api.trello.com/1/boards/${board}/cards?fields=name,url,idShort&key=${key}&token=${token}`, { method: 'GET'})
-                .then(res => res.json())
-                .then(json => {
-                    const requestedCard = json.find(v => v.idShort == requestedCardShortId)
-                    console.log(`The card: ${requestedCard.id}`)
-                    core.setOutput("card-id", requestedCard.id);
-                })
-        };
-        run();
-        sleep(1.5); // TODO: find better method of witing for respons
+        core.group('Fetching card id', async () => {
+            await apiCall(board, key, token, requestedCardShortId);
+          });
+
     }else{
-        console.log(`This commit did not match the trello link syntax: TC-{num}`)
+        console.log("Commit message for Trello link must start with TC-<num>")
     }
 } catch (error) {
     core.setFailed(error.message);
