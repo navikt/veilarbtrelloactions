@@ -22,5 +22,5 @@ inputs:
         default: 'commit'
 
 runs:
-    using: 'node12'
+    using: 'node16'
     main: 'index.js'
