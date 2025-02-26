@@ -36,3 +36,4 @@ attachment-type kan også ta verdien commit.
 
 **Tips:** bruk Autolink references i settings til repository for å lenke direkte til kort: </br>
 TC-123  ->  https://trello.com/b/xwFqjmQY/team-voff?menu=filter&filter=123
+
